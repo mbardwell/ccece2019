@@ -285,6 +285,13 @@ The results in Fig. \ref{fig:annresults} show that the nonlinear ANN solution pr
 	\label{fig:annresults}
 \end{figure}
 
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=9cm]{comparingvoltages_500.pdf}
+	\caption{Comparison of voltage profiles: PSLF calculated, ILR approximated and ANN approximated. Radial network included 500 houses.}
+	\label{fig:annresults}
+\end{figure}
+
 \section{Conclusions}
 \label{sec:conc}
 In this paper, multiple function approximation techniques are applied to a PSLF equation. The identity linear regression outperformed the ANN-based nonlinear regression which was contrary to the original hypothesis. More hyperparameter tuning shows promise that the ANN RMSE can be reduce by 2 or 3 orders of magnitude, which would make it outperform the ILR solution as expected. Further studies should include other features common to power system topologies found in Table. \ref{table:sim model}.
