@@ -104,7 +104,7 @@ Petr Musilek\IEEEauthorrefmark{1}\IEEEauthorrefmark{2}}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-The main contributions of this paper include: developing a Python-based framework to autonomously handle simulation function mapping.
+The main contributions of this paper include demonstrating the function approximation of the power system load flow (PSLF) function. A hyperparameter grid search was used to confirm the optimal training conditions. It was discovered that for large radial networks, the identity linear regression outperforms non-linear regression. This indicates PSLF is a relatively linear function even when the feature space is large. The author's developed a Python-based framework to autonomously handle simulation function mapping.
 %Popular MPPT algorithms like Perturb and Observe are trialed on the Beaglebone Green (BBG) and ESP8266 Feather Huzzah (ESP) and each segment necessary for the system to operate is timed. It is shown that API calls are the major efficiency cap, covering over 90\% of the runtime making it hard to cut the perturbation period down
 
 %MPPT code is developed for two IoT devices, and is segmented by operation during discussion to demonstrate the time between online, offline and hybrid algorithms A buck converter battery charge circuit was designed with a calculated minimum perturbation period of $18.5 us$, along with a minimum duty cycle perturbation step of $0.026$. An independent study on high resolution irradiance data was used to determine the average irradiance slope. Python code is developed for the Beaglebone Green and C code is created for the ESP8266 Feather Huzzah. Capabilities of alternative IoT hardware are discussed. Statistical analysis is performed on historical irradiance data to deliver irradiance slope estimates within a confidence interval. A community test case shows that efficient MPPT using inexpensive IoT hardware is possible, with the added benefit of readily available data for digital services.
@@ -161,9 +161,6 @@ Once a function has been approximated, it is important to make it as usable as p
 \end{figure*}
 
 In Section \ref{sec:relwork} the nuances of function approximating are discussed. In Section \ref{sec:model} the experimental method is outlined, and then the method is executed and results tabulated in Section \ref{sec:results}. Section \ref{sec:conc} summarizes the contributions of this paper. The research is wrapped in an open-source Python package available through \textit{pip install simhandler} or GitHub\footnote{https://github.com/mbardwell/intelligent-simulation-handler}.
-%The bounds on the accuracy of the non-linear model are also discussed, since a perfect fit can never be guaranteed. By combining results on network approximation with analysis of statistical risk, one-layer neural network based estimators are risk-bounded by:
-
-%\begin{equation} E \|f - \hat{f}\|^{2} \leqslant \label{form: nnerror} \end{equation}
 
 \section{Background}
 \label{sec:relwork}
@@ -184,7 +181,7 @@ To determine the bias $w_{0}$ and weight $w_{1}$, you only require two, linearly
 
 It is obvious by inspection that any line, like one drawn between the two sample dots in Fig. \ref{fig:simdata}, would be an underfitted approximation of the correspondence in this simulation. The underfitting is exponentially amplified in higher dimensions, due to the curse of dimensionality. For parameterized models, much more data is required to get a better approximation of the relationship encoded in a simulation.
 
-To map the PSLF equation, a feed-forward ANN with rectified linear units (ReLU) is fed electric power system data. Pre-processing for this data is minimal as each feature is already geometrically balanced; also using per unit ensures the input/output values are close to 1. The network is trained using simple backpropagation. A Monte Carlo approach is taken to fill $S_{i}$ using a uniform distribution with support $x \in [0, 1)$; \textcolor{red}{this ensures optimal cover of the input and output space -- hmm}.
+To map the PSLF equation, a feed-forward ANN with rectified linear units (ReLU) is fed electric power system data. Pre-processing for this data is minimal as each feature is already geometrically balanced; also using per unit ensures the input/output values are close to 1. The network is trained using simple backpropagation. A Monte Carlo approach is taken to fill $S_{i}$ using a uniform distribution with support $x \in [0, 1)$; the stochastic approach optimizes the efficiency of mapping nonlinear functions, much like random search optimizes efficiency for hyperparameter exploration\cite{berg2012}.
 
 There are many variations in power system topology, see Table \ref{table:sim model}. The objective in this paper is to provide the experimental procedure for function mapping a radial feeder network with resistive-only lines. The methodology should naturally extend to other variations as well. It is important to note that to a power-system engineer, an accuracy of $10^{-2}$ is good enough. For example, if the base voltage for a distribution line is 35 kV, the upper bound on the estimation error would be 350 V.
 
@@ -263,7 +260,7 @@ Using 100 samples, a grid search was performed on a simple 3 node, radial networ
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=9cm]{gridsearch.pdf}
-	\caption{Grid search. Manipulated Hyperparameters include activation function, number of layers, density of layers, learning rate. Activation function had the highest correlation as expected. \textcolor{red}{fix activation function column title}}
+	\caption{Grid search. Manipulated Hyperparameters include activation function, number of layers, density of layers, learning rate. Activation function had the largest effect as expected}
 	\label{fig:gridsearch}
 \end{figure}
 
@@ -281,7 +278,7 @@ The results in Fig. \ref{fig:annresults} show that the nonlinear ANN solution pr
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=9cm]{annrmsevsfeatures_familyofcurves.pdf}
-	\caption{ANN for PSLF equations with various input features spaces and samples \textcolor{red}{To be updated - x axis needs to go to 190}}
+	\caption{ANN for PSLF equations with various input features spaces and samples}
 	\label{fig:annresults}
 \end{figure}
 
