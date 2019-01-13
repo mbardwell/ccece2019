@@ -104,7 +104,7 @@ Petr Musilek\IEEEauthorrefmark{1}\IEEEauthorrefmark{2}}
 % As a general rule, do not put math, special symbols or citations
 % in the abstract
 \begin{abstract}
-The main contributions of this paper include demonstrating the function approximation of the power system load flow (PSLF) function. A hyperparameter grid search was used to confirm the optimal training conditions. It was discovered that for large radial networks, the identity linear regression outperforms non-linear regression. This indicates PSLF is a relatively linear function even when the feature space is large. The author's developed a Python-based framework to autonomously handle simulation function mapping.
+The main contribution of this paper is demonstrating the approximation of the power system load flow (PSLF) function. The topological correspondence of radial, electrical power grids is captured with an Artificial Neural Network. A hyperparameter grid search was used to confirm the optimal training conditions. It was discovered that for large radial networks, the identity linear regression outperforms non-linear regression. This indicates PSLF is a relatively linear function even when the feature space is large. The findings were used to developed a Python-based framework to autonomously handle simulation function mapping, which allows for model re-use making the simulation process less computationally expensive and less time-consuming.
 %Popular MPPT algorithms like Perturb and Observe are trialed on the Beaglebone Green (BBG) and ESP8266 Feather Huzzah (ESP) and each segment necessary for the system to operate is timed. It is shown that API calls are the major efficiency cap, covering over 90\% of the runtime making it hard to cut the perturbation period down
 
 %MPPT code is developed for two IoT devices, and is segmented by operation during discussion to demonstrate the time between online, offline and hybrid algorithms A buck converter battery charge circuit was designed with a calculated minimum perturbation period of $18.5 us$, along with a minimum duty cycle perturbation step of $0.026$. An independent study on high resolution irradiance data was used to determine the average irradiance slope. Python code is developed for the Beaglebone Green and C code is created for the ESP8266 Feather Huzzah. Capabilities of alternative IoT hardware are discussed. Statistical analysis is performed on historical irradiance data to deliver irradiance slope estimates within a confidence interval. A community test case shows that efficient MPPT using inexpensive IoT hardware is possible, with the added benefit of readily available data for digital services.
@@ -128,9 +128,9 @@ Modern simulation techniques are expensive. High resolution, complex simulations
 
 Today's simulation models are handled in engines like MATLAB Simulink, which are highly multivariate, nonlinear equations, masked by a graphical user interface and solved using numerical methods. Advanced regression techniques and computing power has made it possible to capture extremely high-dimensional, nonlinear systems of equations. This paper explores the regression techniques successful in function approximating the topological correspondence in electric power grids.
 
-The general regression formula is shown in eqn (\ref{form:regr}). The function is linear with respect to the weights $w$, and the basis functions $\phi(x)$. One-layer artificial neural networks is an example of an estimator consistent with this formula and will be discussed further in this paper.
-
 \begin{equation} f(x) = \sum_{i =0}^{z}w_{i}^{T} \cdot \phi_{i}(x) \label{form:regr} \end{equation} 
+
+The general regression formula is shown in eqn (\ref{form:regr}). The function is linear with respect to the weights $w$, and the basis functions $\phi(x)$. One-layer artificial neural networks is an example of an estimator consistent with this formula and will be discussed further in this paper.
 
 The electric power grid is governed by the power system load flow (PSLF) equation in eqn (\ref{form:nlpfeqn}). PSLF defines the relationship between the input power vector $S_{i}$, and the output voltage vector $V_{i/k}$. The user creates a Y-bus admittance matrix $Y_{ii/ik}$ by selecting the bus connection topology like the radial topology in Fig. \ref{fig:radnetwork}, where each circle represents a house. Our focus is to capture the unique correspondence between houses using function mapping.
 
@@ -143,13 +143,13 @@ The electric power grid is governed by the power system load flow (PSLF) equatio
 	\label{fig:radnetwork}
 \end{figure}
 
-There are many function approximation techniques, starting in statistics with methods like nonlinear least squares and maximum likelihood estimates which belong to a broader class called M-estimators \cite{haya2000}. Radial basis functions are used in \cite{mann1999} to model nonlinear voiced speech sounds. Chen develops a backpropagation technique for multi-layer perceptron function approximation in \cite{chen1994}. Similarly, techniques such as wavelets \cite{zhang1992}, kernal-type methods \cite{lowe1991} and projection pursuit models \cite{fried1981} all provide nonlinear approximations. \cite{zhang2004} develops the concepts of extrema equivalence to estimate the complexity of a function, thereby providing an empirical method to select ANN network size and toplogy. \cite{cheng1994} provides a statistical perspective on many of the aforementioned techniques; for example, assuming $f(x)/V$ is inside the convex hull of a trained one-layer ANN represented as $f_{M}$, amongst a few other assumptions, we can say the approximation error is bounded as:
+There are many function approximation techniques, starting in statistics with methods like nonlinear least squares and maximum likelihood estimates which belong to a broader class called M-estimators \cite{haya2000}. Radial basis functions are used in \cite{mann1999} to model nonlinear voiced speech sounds. Chen develops a backpropagation technique for multi-layer perceptron function approximation in \cite{chen1994}. Similarly, techniques such as wavelets \cite{zhang1992}, kernel-type methods \cite{lowe1991} and projection pursuit models \cite{fried1981} all provide nonlinear approximations. Concepts of extrema equivalence are developed to estimate the complexity of a function in \cite{zhang2004}, thereby providing an empirical method to select ANN network size and toplogy. A statistical perspective on many of the aforementioned techniques is provided in \cite{cheng1994}; for example, assuming $f(x)/V$ is inside the convex hull of a trained one-layer ANN represented as $f_{M}$, amongst a few other assumptions, we can say the approximation error is bounded as:
 
-\begin{equation} \|f - f_{M}\| \leqslant \frac{V}{\sqrt{M}} \label{form:1layerannbound} \end{equation}
+\begin{equation} \|f - f_{M}\| \leqslant \frac{V}{\sqrt{M}}, \label{form:1layerannbound} \end{equation}
 
-\noindent Where M is the number of neurons in the hidden layer.
+\noindent where M is the number of neurons in the hidden layer.
 
-Artificial neural networks (ANN) are a good choice for function approximation due to their adjustable basis function nature \cite{barr1994}, this is excellent for our application as there is uncertainty in the nature of the PSLF-based function to be approximated, so adjustable basis functions will make development easier.
+Artificial neural networks (ANN) are a good choice for function approximation due to their adjustable basis function nature \cite{barr1994}. This is excellent for our application as there is uncertainty in the nature of the PSLF-based function to be approximated. When training, the basis functions can be quickly adjusted using hyperparameters making development fast.
 
 Once a function has been approximated, it is important to make it as usable as possible. A Python program was developed to autonomously handle the PSLF function approximating. The program is summarized in Fig. \ref{fig:infoflow}.
 
@@ -164,11 +164,11 @@ In Section \ref{sec:relwork} the nuances of function approximating are discussed
 
 \section{Background}
 \label{sec:relwork}
-A mapping is a rule of correspondence between input and output vectors. To function map a simulation model, two sets of vectors $a_{i} \in R^{p}$, $b_{i} \in R^{q}$ are required: a finite input data set $\left\{a_{0}, a_{1}, \ldots, a_{m}\right\}$ and a finite output data set $\left\{b_{0}, b_{1}, \ldots, b_{n}\right\}$; the output set is calculated by passing the input set through a well-defined simulation model. m, n are the number of input/output features in the simulation model respectively and the length of each vector in either set is defined as the number of samples and is orthogonal to m, n. For example, an MNIST identifier might have an m = 1000, n = 10 reflecting 1000 pixels per image and 10 possible outcomes (digits 0-9) respectively.
+A mapping is a rule of correspondence between input and output vectors. To function map a simulation model, two sets of vectors $a_{i} \in R^{p}$, $b_{i} \in R^{q}$ are required: a finite input data set $\left\{a_{0}, a_{1}, \ldots, a_{m}\right\}$ and a finite output data set $\left\{b_{0}, b_{1}, \ldots, b_{n}\right\}$; the output set is calculated by passing the input set through a well-defined simulation model. m, n are the number of input/output features in the simulation model respectively and the length of each vector in either set is defined as the number of samples and is orthogonal to m, n. For example, an Modified National Institute of Standards and Technology (MNIST) identifier might have an m = 1000, n = 10 reflecting 1000 pixels per image and 10 possible outcomes (digits 0-9) respectively.
 
 The more non-linear the simulation model, the more samples required for function mapping to meet high accuracy goals. For example, imagine the simulation model is a simple, two-dimensional linear function. From eqn (\ref{form:regr}), assuming $\phi(x) = \{1, x\}$
 
-\begin{equation} f(x) = w_{0} + w_{1} \cdot x \label{form: line} \end{equation}
+\begin{equation} f(x) = w_{0} + w_{1} x. \label{form: line} \end{equation}
 
 To determine the bias $w_{0}$ and weight $w_{1}$, you only require two, linearly independent, m-dimensional data points. Now imagine a more likely scenario for a simulation model, which produces a noisy function like in Fig. \ref{fig:simdata}.
 
@@ -183,7 +183,7 @@ It is obvious by inspection that any line, like one drawn between the two sample
 
 To map the PSLF equation, a feed-forward ANN with rectified linear units (ReLU) is fed electric power system data. Pre-processing for this data is minimal as each feature is already geometrically balanced; also using per unit ensures the input/output values are close to 1. The network is trained using simple backpropagation. A Monte Carlo approach is taken to fill $S_{i}$ using a uniform distribution with support $x \in [0, 1)$; the stochastic approach optimizes the efficiency of mapping nonlinear functions, much like random search optimizes efficiency for hyperparameter exploration\cite{berg2012}.
 
-There are many variations in power system topology, see Table \ref{table:sim model}. The objective in this paper is to provide the experimental procedure for function mapping a radial feeder network with resistive-only lines. The methodology should naturally extend to other variations as well. It is important to note that to a power-system engineer, an accuracy of $10^{-2}$ is good enough. For example, if the base voltage for a distribution line is 35 kV, the upper bound on the estimation error would be 350 V.
+There are many variations in power system topology, see Table \ref{table:sim model}. The objective in this paper is to provide the experimental procedure for function mapping a radial feeder network with resistive-only lines. The methodology should naturally extend to other variations as well. It is important to note that to a power-system engineer, an accuracy of $10^{-2}$ is sufficient. For example, if the base voltage for a distribution line is 35 kV, the upper bound on the estimation error would be 350 V.
 
 \begin{table}[h]
 \centering
@@ -209,11 +209,11 @@ Generator Availability & Minimum/Maximum Real and Reactive Power \\
 \end{table}
 \vspace{-1.5em}
 
-Mean-square error (MSE), also known as the $L_{2}$ or Euclidean norm is the accuracy metric used for ANN training. It is optimal for function approximation as it is more sensitive to outliers than mean absolute error. Root-MSE (RMSE) will be used for analysis, however, since it is in the same units as the feature space.
+Mean-square error (MSE), also known as the $\ell_{2}$ or Euclidean norm is the accuracy metric used for ANN training. It is optimal for function approximation as it is more sensitive to outliers than mean absolute error. Root-MSE (RMSE) will be used for analysis, however, since it is in the same units as the feature space.
 
-To demonstrate the accuracy capabilities of nonlinear function mapping, the results are compared to an identity linear regression (ILR) with m-dimensions, which is derived by setting $\phi_{i}(x) = x_{i}$ in eqn (\ref{form:regr}).
+To demonstrate the accuracy capabilities of nonlinear function mapping, the results are compared to an identity linear regression (ILR) with m-dimensions, which is derived by setting $\phi_{i}(x) = x_{i}$ in eqn (\ref{form:regr})
 
-\begin{equation} f(x) = w_{0} + \sum_{i =1}^{m}w_{i}^{T} \cdot x_{i} \label{form: idnregr} \end{equation}
+\begin{equation} f(x) = w_{0} + \sum_{i =1}^{m}w_{i}^{T} \cdot x_{i}. \label{form: idnregr} \end{equation}
 
 For smaller-featured systems, ILR may out-perform the ANN. This is because PSLF with very small systems tends to have little noise; also ILR is fitted to the data, which unlike gradient descent used in ANN training is an exact process. ILR is fitted using the normal equation.
 
@@ -241,7 +241,7 @@ The generic approach to function approximating PSLF equations is outlined in Fig
 
 According to \cite{chen1994}\cite{du2014}, three-layer ANN's are considered universal approximators. Naturally, this would be a good starting number of hidden layers, however preliminary tuning with ILR's which are similar to one-layer ANN's has shown reasonable results, so the number of hidden layers will be tuned between 1-3. 
 
-Sample size is also important. Since a Monte Carlo approach is taken to fill $S_{i}$, a theoretical infinite number of samples could be used to fit/train the approximation. This is unrealistic, so a preliminary study was done to determine the time it takes to calculate the outputs from the iterative PSLF process. Note the intention of this study is to observe the extremums of accuracy, so a high sample/small feature space approach was taken.
+Sample size is also important. Since a Monte Carlo approach is taken to fill $S_{i}$, a theoretical infinite number of samples could be used to fit/train the approximation. This is unrealistic, so a preliminary study was done to determine the time it takes to calculate the outputs from the iterative PSLF process. Note the intention of this study is to observe the extrema of accuracy, so a high sample/small feature space approach was taken.
 
 \begin{figure}[h]
 	\centering
@@ -250,7 +250,7 @@ Sample size is also important. Since a Monte Carlo approach is taken to fill $S_
 	\label{fig:pslfruntime}
 \end{figure}
 
-The results from Fig. \ref{fig:pslfruntime} show the runtime increases around $0.034~s/sample$ for a very small network. Another study showed an increase of $0.016~s/feature$. This gives us the following runtime equation: $t(s) = 0.034\cdot N + 0.016\cdot m$, with N being the number of samples. The study will be capped at m = 200 and N = 5 000 which puts our maximum runtime around 3 minutes, which is very reasonable as it allows us to collect many data points. In short, N will be bound by $[m_{min}, 25\cdot m]$. The optimization algorithm will be ADAM, a very popular variant of momentum-based optimizers and the initial learning rate will be set to $10^{-4}$.
+The results from Fig. \ref{fig:pslfruntime} show the runtime increases around $0.034~s$ per sample for a very small network. Another study showed an increase of $0.016~s$ per feature. This gives us the following runtime equation: $t(s) = 0.034\cdot N + 0.016\cdot m$, with N being the number of samples. The study will be capped at m = 200 and N = 5 000 which puts our maximum runtime around 3 minutes, which is very reasonable as it allows us to collect many data points. In short, $N$ will be bound by $[m_{min}, 25\cdot m]$. The optimization algorithm will be ADAM, a very popular variant of momentum-based optimizers and the initial learning rate will be set to $10^{-4}$.
  
 \section{Results}
 \label{sec:results}
@@ -273,7 +273,7 @@ Fig. \ref{fig:ilrresults} shows the results of function approximating with ILR. 
 	\label{fig:ilrresults}
 \end{figure}
 
-The results in Fig. \ref{fig:annresults} show that the nonlinear ANN solution produces more error than the ILR fit. This would suggest that the PSLF has very little noise, even when the feature space is as large as 200 dimensions. Further hyperparameter tuning is required as this results is illogical. One interesting observation from the figure is the approximation results are much more sporadic when the samples-to-feature ratio is below 5 confirming the nonlinear solution requires more data than the ILR to be trained to a low RMSE.
+The results in Fig. \ref{fig:annresults} show that the nonlinear ANN solution produces more error than the ILR fit. This would suggest that the PSLF has very little noise, even when the feature space is as large as 200 dimensions. Further hyperparameter tuning is required as this results is illogical. One interesting observation from the figure is the approximation results are much more sporadic when the samples-to-feature ratio is below 5, confirming the nonlinear solution requires more data than the ILR to be trained to a low RMSE.
 
 \begin{figure}[h]
 	\centering
@@ -293,7 +293,7 @@ Fig. \ref{fig:comparison} visualises the accuracy of function approximating with
 
 \section{Conclusions}
 \label{sec:conc}
-In this paper, multiple function approximation techniques are applied to a PSLF equation. The identity linear regression outperformed the ANN-based nonlinear regression which was contrary to the original hypothesis. More hyperparameter tuning shows promise that the ANN RMSE can be reduce by 2 or 3 orders of magnitude, which would make it outperform the ILR solution as expected. Consideration of the extremums in the feature space moment could lead to an analytical selection of ANN hyperparameters. Further studies should include other features common to power system topologies found in Table. \ref{table:sim model}.
+In this paper, multiple function approximation techniques are applied to a PSLF equation. The identity linear regression outperformed the ANN-based nonlinear regression which was contrary to the original hypothesis. More hyperparameter tuning shows promise that the ANN RMSE can be reduce by 2 or 3 orders of magnitude, which would make it outperform the ILR solution as expected. Consideration of the extrema in the feature space moment could lead to an analytical selection of ANN hyperparameters. Further studies should include other features common to power system topologies found in Table. \ref{table:sim model}.
 
 \section*{Acknowledgment}
 Support from Future Energy Systems under the Canada First Research Excellence Fund (CFREF) at the University of Alberta is humbly appreciated.
